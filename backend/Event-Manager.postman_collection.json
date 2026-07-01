@@ -1,0 +1,387 @@
+{
+	"info": {
+		"_postman_id": "e2a0b12f-6828-4e1e-b816-c9569ea23871",
+		"name": "Event Manager API",
+		"description": "Postman collection for testing the Event-Manager API. Includes authentication handling, user profile management, event management, and event registrations.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Registers a new user. The default role will be set to 'USER'."
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"if (response.success && response.data && response.data.token) {",
+									"    pm.collectionVariables.set(\"token\", response.data.token);",
+									"    console.log(\"Token saved to collection variables!\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"Password123!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Logs in a user and automatically stores the JWT token in the `token` collection variable for subsequent authenticated requests."
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints (Register & Login)"
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"profile"
+							]
+						},
+						"description": "Retrieves the profile of the currently authenticated user."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe Updated\",\n  \"profile_image\": \"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"profile"
+							]
+						},
+						"description": "Updates the name and/or profile image of the currently authenticated user."
+					},
+					"response": []
+				}
+			],
+			"description": "User profile management (Requires Authentication)"
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "Get All Events",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/events",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events"
+							]
+						},
+						"description": "Retrieves all events. This is a public endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event By ID",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/events/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{eventId}}"
+							]
+						},
+						"description": "Retrieves details of a specific event by its ID. This is a public endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"if (response.success && response.data && response.data.id) {",
+									"    pm.collectionVariables.set(\"eventId\", response.data.id);",
+									"    console.log(\"Event ID saved to collection variables!\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Tech Summit 2026\",\n  \"description\": \"The premier event for developers and tech enthusiasts.\",\n  \"banner_url\": \"https://images.unsplash.com/photo-1540575467063-178a50c2df87\",\n  \"venue\": \"Convention Center, Hall A\",\n  \"start_date\": \"2026-09-15T09:00:00Z\",\n  \"end_date\": \"2026-09-17T18:00:00Z\",\n  \"max_participants\": 500,\n  \"registration_deadline\": \"2026-09-10T23:59:59Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/events",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events"
+							]
+						},
+						"description": "Creates a new event. (Requires ADMIN or ORGANIZER role). Dynamically saves the created `eventId` as a collection variable for other requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Event",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Tech Summit 2026 - Updated\",\n  \"description\": \"The premier event for developers, designers, and tech enthusiasts.\",\n  \"banner_url\": \"https://images.unsplash.com/photo-1540575467063-178a50c2df87\",\n  \"venue\": \"Convention Center, Hall B (Updated)\",\n  \"start_date\": \"2026-09-15T09:00:00Z\",\n  \"end_date\": \"2026-09-17T18:00:00Z\",\n  \"max_participants\": 600,\n  \"registration_deadline\": \"2026-09-10T23:59:59Z\",\n  \"status\": \"UPCOMING\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/events/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{eventId}}"
+							]
+						},
+						"description": "Updates an existing event's details. (Requires ADMIN or ORGANIZER role)."
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel (Delete) Event",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/events/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"{{eventId}}"
+							]
+						},
+						"description": "Cancels an event by changing its status to 'CANCELLED'. (Requires ADMIN or ORGANIZER role)."
+					},
+					"response": []
+				}
+			],
+			"description": "Event management endpoints."
+		},
+		{
+			"name": "Registrations",
+			"item": [
+				{
+					"name": "Register For Event",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/registrations/{{eventId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"registrations",
+								"{{eventId}}"
+							]
+						},
+						"description": "Registers the currently authenticated user for the specified event. (Requires USER role)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event Participants",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/registrations/{{eventId}}/participants",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"registrations",
+								"{{eventId}}",
+								"participants"
+							]
+						},
+						"description": "Retrieves the list of participants registered for the specified event. (Requires ADMIN or ORGANIZER role)."
+					},
+					"response": []
+				}
+			],
+			"description": "Event registration and participant management."
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "eventId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
