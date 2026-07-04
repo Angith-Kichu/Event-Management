@@ -25,4 +25,5 @@ export const createEventValidation = [
     body("max_participants")
         .isInt({ min: 1 })
         .withMessage("Participants must be greater than 0.")
+        .toInt(),
 ];

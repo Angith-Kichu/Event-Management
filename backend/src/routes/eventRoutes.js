@@ -8,6 +8,7 @@ import {
     validate,
 } from "../middlewares/index.js";
 
+import upload from "../middlewares/upload.js";
 import { UserRoles } from "../models/index.js";
 import { createEventValidation } from "../validations/index.js";
 
@@ -26,6 +27,7 @@ router.post(
         UserRoles.ADMIN,
         UserRoles.ORGANIZER
     ),
+    upload.single("banner"),
     createEventValidation,
     validate,
     eventController.createEvent
@@ -38,6 +40,7 @@ router.put(
         UserRoles.ADMIN,
         UserRoles.ORGANIZER
     ),
+    upload.single("banner"),
     createEventValidation,
     validate,
     eventController.updateEvent

@@ -1,10 +1,21 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import eventService from "../services/eventService.js";
+import storageService from "../services/storageService.js";
 
 const createEvent = asyncHandler(async (req, res) => {
 
+    let banner_url = null;
+
+    if (req.file) {
+        banner_url = await storageService.uploadImage(
+            req.file,
+            "events"
+        );
+    }
+
     const event = await eventService.createEvent({
         ...req.body,
+        banner_url,
         created_by: req.user.id,
     });
 
@@ -39,6 +50,21 @@ const getEvent = asyncHandler(async (req, res) => {
 });
 
 const updateEvent = asyncHandler(async (req, res) => {
+
+    // If a new banner file is uploaded, upload to S3 and clean up old one
+    if (req.file) {
+        const existingEvent = await eventService.getEvent(req.params.id);
+
+        // Delete old banner from S3 if it exists
+        if (existingEvent.banner_url) {
+            await storageService.deleteImage(existingEvent.banner_url);
+        }
+
+        req.body.banner_url = await storageService.uploadImage(
+            req.file,
+            "events"
+        );
+    }
 
     const updated = await eventService.updateEvent(
         req.params.id,

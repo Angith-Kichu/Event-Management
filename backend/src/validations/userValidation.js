@@ -5,10 +5,6 @@ export const updateProfileValidation = [
     body("name")
         .optional()
         .trim()
-        .isLength({ min: 3 }),
-
-    body("profile_image")
-        .optional()
-        .isURL()
-        .withMessage("Invalid image URL.")
+        .isLength({ min: 3 })
+        .withMessage("Name must be at least 3 characters."),
 ];
