@@ -31,7 +31,16 @@ const getParticipants = asyncHandler(async (req, res) => {
 
 });
 
+const getMyRegisteredEvents = asyncHandler(async (req, res) => {
+    const events = await registrationService.getRegisteredEvents(req.user.id);
+    res.json({
+        success: true,
+        data: events,
+    });
+});
+
 export default {
     register,
     getParticipants,
+    getMyRegisteredEvents,
 };

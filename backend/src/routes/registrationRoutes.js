@@ -14,6 +14,13 @@ import { eventRegistrationValidation } from "../validations/index.js";
 
 const router = express.Router();
 
+router.get(
+    "/my-events",
+    authenticate,
+    authorize(UserRoles.USER),
+    registrationController.getMyRegisteredEvents
+);
+
 router.post(
     "/:id",
     authenticate,

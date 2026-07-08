@@ -48,7 +48,12 @@ export async function getParticipants(eventId) {
         .getParticipants(eventId);
 }
 
+export async function getRegisteredEvents(userId) {
+    return await registrationRepository.getRegisteredEvents(userId);
+}
+
 export default {
     register,
     getParticipants,
+    getRegisteredEvents,
 };

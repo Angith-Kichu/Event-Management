@@ -26,6 +26,9 @@ const authenticate = async (req, res, next) => {
 
         next();
     } catch (error) {
+        if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError") {
+            return next(new UnauthorizedError("Invalid or expired token."));
+        }
         next(error);
     }
 };

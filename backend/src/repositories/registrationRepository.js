@@ -52,8 +52,28 @@ export async function getParticipants(eventId) {
   return rows;
 }
 
+export async function getRegisteredEvents(userId) {
+  const query = `
+    SELECT
+      e.*,
+      u.name AS organizer,
+      r.registered_at,
+      r.status AS registration_status
+    FROM registrations r
+    JOIN events e ON r.event_id = e.id
+    JOIN users u ON e.created_by = u.id
+    WHERE r.user_id = $1 AND r.status = 'REGISTERED'
+    ORDER BY e.start_date ASC;
+  `;
+
+  const { rows } = await pool.query(query, [userId]);
+
+  return rows;
+}
+
 export default {
   registerUser,
   isAlreadyRegistered,
   getParticipants,
+  getRegisteredEvents,
 }

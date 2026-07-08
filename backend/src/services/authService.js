@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import userRepository from "../repositories/userRepository.js";
 import { env } from "../config/env.js";
 import { UserRoles } from "../models/index.js";
+import { UnauthorizedError, ConflictError } from "../errors/index.js";
 
 export async function register(userData) {
 
@@ -17,6 +18,10 @@ export async function register(userData) {
     const hashedPassword =
         await bcrypt.hash(userData.password, 10);
 
+    const role = Object.values(UserRoles).includes(userData.role)
+        ? userData.role
+        : UserRoles.USER;
+
     const user = await userRepository.createUser({
 
         name: userData.name,
@@ -25,7 +30,7 @@ export async function register(userData) {
 
         password: hashedPassword,
 
-        role: UserRoles.USER,
+        role: role,
 
         profile_image: null,
     });
